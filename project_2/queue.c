@@ -199,13 +199,18 @@ int main(void){
 
     // test queue 1 scheduler
     queue1Scheduler(&queue1);
+    // error testing for queue 1
+    queue1Scheduler(&queue1);
 
     // test queue 2 scheduler
+    queue2Scheduler(&queue2);
+    // error testing for queue 2
     queue2Scheduler(&queue2);
 
     // test queue 3 scheduler
     queue3Scheduler(&queue3);
-
+    // error testing for queue 3
+    queue3Scheduler(&queue3);   
 
 
 
