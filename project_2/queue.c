@@ -70,6 +70,7 @@ void queue1Scheduler(struct QueueSysProcess *queue1){
 void queue2Scheduler(struct QueueUserProcess *queue2){
     // temp variable to hold process
     struct User_process temp = queue2->queue[0];
+
     // if queue is empty print message
     if(queue2->count == 0){
         printf("Queue %d is empty\n", queue2->queuePriority);
@@ -101,23 +102,27 @@ void queue2Scheduler(struct QueueUserProcess *queue2){
 
 // queue3 scheduler using shortest job first (SJF)
 void queue3Scheduler(struct QueueUserProcess *queue3){
+    // temp variable to hold process
+    struct User_process temp = queue3->queue[0];
+
     // if queue is empty print message
     if(queue3->count == 0){
         printf("Queue %d is empty\n", queue3->queuePriority);
         return;
     }
     // sort shortest job first
-    for (int i = 0; i > queue3->count; i++){
-        // temp variable to hold process
-        struct User_process temp = queue3->queue[0];
+    for (int i = 0; i < queue3->count; i++){
+        
         for (int j = 0; j < queue3->count; j++){
-            // if current process burst time is less than temp burst time
-            if(queue3->queue[j].burstTime < temp.burstTime){
+            // if current process burst time is greater then the one next in line switch them
+            if(queue3->queue[j].burstTime > queue3->queue[j+1].burstTime && (j+1) < queue3->count){
                 temp = queue3->queue[j];
+                queue3->queue[j] = queue3->queue[j+1];
+                queue3->queue[j+1] = temp;
             }
         }
     }
-    // print process that is running and remove it from queue
+    // print sorted process array smallest to largest burst time
     for (int i = 0; i < queue3->count; i++){
         printf("Process %s is running\n", queue3->queue[0].processName);
         // remove process from queue
@@ -222,7 +227,7 @@ int main(void){
     // run multiQueueScheduler to run all queues in order of priority 1, 2, 3
     // multiQueueScheduler(&queue1, &queue2, &queue3);
 
-    queue2Scheduler(&queue2);
+    queue3Scheduler(&queue3);
 
 
 
