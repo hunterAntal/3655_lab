@@ -47,6 +47,7 @@ void addUserToQueue(struct QueueUserProcess *queue, struct User_process process)
     }
 }
 
+// queue1 scheduler using first in first out (FIFO)
 void queue1Scheduler(struct QueueSysProcess *queue1){
     // if queue is empty print message
     if(queue1->count == 0){
@@ -60,10 +61,39 @@ void queue1Scheduler(struct QueueSysProcess *queue1){
         for (int j = 0; j < queue1->count; j++){
             queue1->queue[j] = queue1->queue[j+1];
         }
-        //queue1->count--;
     }
     // now that all processes have been run, reset the count to 0
     queue1->count = 0;
+}
+
+// queue2 scheduler using longest job first (LJF)
+void queue2Scheduler(struct QueueUserProcess *queue2){
+    // if queue is empty print message
+    if(queue2->count == 0){
+        printf("Queue %d is empty\n", queue2->queuePriority);
+        return;
+    }
+    // sort longest job first
+    for (int i = 0; i > queue2->count; i++){
+        // temp variable to hold process
+        struct User_process temp = queue2->queue[0];
+        for (int j = 0; j < queue2->count; j++){
+            // if current process burst time is greater than temp burst time
+            if(queue2->queue[j].burstTime > temp.burstTime){
+                temp = queue2->queue[j];
+            }
+        }
+    }
+    // print process that is running and remove it from queue
+    for (int i = 0; i < queue2->count; i++){
+        printf("Process %s is running\n", queue2->queue[0].processName);
+        // remove process from queue
+        for (int j = 0; j < queue2->count; j++){
+            queue2->queue[j] = queue2->queue[j+1];
+        }
+    }
+    // now that all processes have been run, reset the count to 0
+    queue2->count = 0;
 }
 
 int main(void){
@@ -100,11 +130,11 @@ int main(void){
     struct User_process edge = {2, 1.25, "Edge"};
     struct User_process opera = {2, 1.0, "Opera"};
     struct User_process brave = {2, 1.0, "Brave"};
-    struct User_process word = {2, 1.5, "Word"};
-    struct User_process excel = {2, 1.75, "Excel"};
-    struct User_process powerpoint = {2, 1.25, "Powerpoint"};
-    struct User_process outlook = {2, 1.0, "Outlook"};
-    struct User_process onenote = {2, 1.0, "OneNote"};
+    struct User_process word = {3, 1.5, "Word"};
+    struct User_process excel = {3, 1.75, "Excel"};
+    struct User_process powerpoint = {3, 1.25, "Powerpoint"};
+    struct User_process outlook = {3, 1.0, "Outlook"};
+    struct User_process onenote = {3, 1.0, "OneNote"};
 
     // add user processes to waiting queue
     addUserToQueue(&waitingUserQueue, chrome);
@@ -123,10 +153,25 @@ int main(void){
         addSysToQueue(&queue1, waitingSysQueue->queue[i]);
     }
 
+    // add user processes to queue 2
+    for (int i = 0; i < waitingUserQueue->count; i++){
+        if (waitingUserQueue->queue[i].priority == 2){
+            addUserToQueue(&queue2, waitingUserQueue->queue[i]);
+        }
+    }
+
+    // add user processes to queue 3
+    for (int i = 0; i < waitingUserQueue->count; i++){
+        if (waitingUserQueue->queue[i].priority == 3){
+            addUserToQueue(&queue3, waitingUserQueue->queue[i]);
+        }
+    }
+
     // test queue 1 scheduler
     queue1Scheduler(&queue1);
 
-    queue1Scheduler(&queue1);
+    // test queue 2 scheduler
+    queue2Scheduler(&queue2);
 
 
 
