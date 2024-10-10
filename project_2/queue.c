@@ -56,7 +56,7 @@ void queue1Scheduler(struct QueueSysProcess *queue1){
     }
     // sort first in first out
     for (int i = 0; i < queue1->count; i++){
-        printf("Process %s is running\n", queue1->queue[0].processName);
+        printf("Process %s is running. Priority: %d, Burst Time: %.2f\n", queue1->queue[0].processName, queue1->queue[0].priority, queue1->queue[0].burstTime);
         // remove process from queue
         for (int j = 0; j < queue1->count; j++){
             queue1->queue[j] = queue1->queue[j+1];
@@ -90,7 +90,7 @@ void queue2Scheduler(struct QueueUserProcess *queue2){
     }
     // print sorted process array larget to smallest burst time
     for (int i = 0; i < queue2->count; i++){
-        printf("Process %s is running\n", queue2->queue[0].processName);
+        printf("Process %s is running. Priority: %d, Burst Time: %.2f\n", queue2->queue[0].processName, queue2->queue[0].priority, queue2->queue[0].burstTime);
         // remove process from queue
         for (int j = 0; j < queue2->count; j++){
             queue2->queue[j] = queue2->queue[j+1];
@@ -124,7 +124,7 @@ void queue3Scheduler(struct QueueUserProcess *queue3){
     }
     // print sorted process array smallest to largest burst time
     for (int i = 0; i < queue3->count; i++){
-        printf("Process %s is running\n", queue3->queue[0].processName);
+        printf("Process %s is running. Priority: %d, Burst Time: %.2f\n", queue3->queue[0].processName, queue3->queue[0].priority, queue3->queue[0].burstTime);
         // remove process from queue
         for (int j = 0; j < queue3->count; j++){
             queue3->queue[j] = queue3->queue[j+1];
@@ -136,17 +136,22 @@ void queue3Scheduler(struct QueueUserProcess *queue3){
 
 // multiQueueScheduler priority 1, 2, 3
 void multiQueueScheduler(struct QueueSysProcess *queue1, struct QueueUserProcess *queue2, struct QueueUserProcess *queue3){
+    printf("Running processes in queue 1\n");
     // run queue1 scheduler
     queue1Scheduler(queue1);
 
     // only run queue2 scheduler if queue1 is empty
     if (queue1->count == 0){
+        printf("\n");
+        printf("Running processes in queue 2\n");
         // run queue2 scheduler
         queue2Scheduler(queue2);
     }
 
     // only run queue3 scheduler if queue1 and queue2 are empty
     if (queue1->count == 0 && queue2->count == 0){
+        printf("\n");
+        printf("Running processes in queue 3\n");
         // run queue3 scheduler
         queue3Scheduler(queue3);
     }
@@ -225,9 +230,9 @@ int main(void){
     }
 
     // run multiQueueScheduler to run all queues in order of priority 1, 2, 3
-    // multiQueueScheduler(&queue1, &queue2, &queue3);
+    multiQueueScheduler(&queue1, &queue2, &queue3);
 
-    queue3Scheduler(&queue3);
+
 
 
 
