@@ -1,5 +1,12 @@
+// Hunter Antal
+// 1181729
+// 3655 Project 2
+// 10/10/2024
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 #define QUEUE_SIZE 100
 // system process
 struct Sys_process{
@@ -57,6 +64,9 @@ void queue1Scheduler(struct QueueSysProcess *queue1){
     // sort first in first out
     for (int i = 0; i < queue1->count; i++){
         printf("Process %s is running. Priority: %d, Burst Time: %.2f\n", queue1->queue[0].processName, queue1->queue[0].priority, queue1->queue[0].burstTime);
+
+        // Simulate process execution
+        sleep(queue1->queue[0].burstTime); 
         // remove process from queue
         for (int j = 0; j < queue1->count; j++){
             queue1->queue[j] = queue1->queue[j+1];
@@ -79,7 +89,7 @@ void queue2Scheduler(struct QueueUserProcess *queue2){
     // sort longest job first
     for (int i = 0; i < queue2->count; i++){
         
-        for (int j = 0; j < queue2->count; j++){
+        for (int j = 0; j < queue2->count - 1; j++){
             // if current process burst time is less then the one next in line switch them
             if(queue2->queue[j].burstTime < queue2->queue[j+1].burstTime){
                 temp = queue2->queue[j];
@@ -91,6 +101,9 @@ void queue2Scheduler(struct QueueUserProcess *queue2){
     // print sorted process array larget to smallest burst time
     for (int i = 0; i < queue2->count; i++){
         printf("Process %s is running. Priority: %d, Burst Time: %.2f\n", queue2->queue[0].processName, queue2->queue[0].priority, queue2->queue[0].burstTime);
+
+        // Simulate process execution
+        sleep(queue2->queue[0].burstTime);
         // remove process from queue
         for (int j = 0; j < queue2->count; j++){
             queue2->queue[j] = queue2->queue[j+1];
@@ -113,9 +126,9 @@ void queue3Scheduler(struct QueueUserProcess *queue3){
     // sort shortest job first
     for (int i = 0; i < queue3->count; i++){
         
-        for (int j = 0; j < queue3->count; j++){
+        for (int j = 0; j < queue3->count - 1; j++){
             // if current process burst time is greater then the one next in line switch them
-            if(queue3->queue[j].burstTime > queue3->queue[j+1].burstTime && (j+1) < queue3->count){
+            if(queue3->queue[j].burstTime > queue3->queue[j+1].burstTime){
                 temp = queue3->queue[j];
                 queue3->queue[j] = queue3->queue[j+1];
                 queue3->queue[j+1] = temp;
@@ -125,6 +138,8 @@ void queue3Scheduler(struct QueueUserProcess *queue3){
     // print sorted process array smallest to largest burst time
     for (int i = 0; i < queue3->count; i++){
         printf("Process %s is running. Priority: %d, Burst Time: %.2f\n", queue3->queue[0].processName, queue3->queue[0].priority, queue3->queue[0].burstTime);
+        // Simulate process execution
+        sleep(queue3->queue[0].burstTime);
         // remove process from queue
         for (int j = 0; j < queue3->count; j++){
             queue3->queue[j] = queue3->queue[j+1];
