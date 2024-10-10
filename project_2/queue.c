@@ -68,23 +68,26 @@ void queue1Scheduler(struct QueueSysProcess *queue1){
 
 // queue2 scheduler using longest job first (LJF)
 void queue2Scheduler(struct QueueUserProcess *queue2){
+    // temp variable to hold process
+    struct User_process temp = queue2->queue[0];
     // if queue is empty print message
     if(queue2->count == 0){
         printf("Queue %d is empty\n", queue2->queuePriority);
         return;
     }
     // sort longest job first
-    for (int i = 0; i > queue2->count; i++){
-        // temp variable to hold process
-        struct User_process temp = queue2->queue[0];
+    for (int i = 0; i < queue2->count; i++){
+        
         for (int j = 0; j < queue2->count; j++){
-            // if current process burst time is greater than temp burst time
-            if(queue2->queue[j].burstTime > temp.burstTime){
+            // if current process burst time is less then the one next in line switch them
+            if(queue2->queue[j].burstTime < queue2->queue[j+1].burstTime){
                 temp = queue2->queue[j];
+                queue2->queue[j] = queue2->queue[j+1];
+                queue2->queue[j+1] = temp;
             }
         }
     }
-    // print process that is running and remove it from queue
+    // print sorted process array larget to smallest burst time
     for (int i = 0; i < queue2->count; i++){
         printf("Process %s is running\n", queue2->queue[0].processName);
         // remove process from queue
@@ -216,20 +219,10 @@ int main(void){
         }
     }
 
-    // test queue 1 scheduler
-    queue1Scheduler(&queue1);
-    // error testing for queue 1
-    queue1Scheduler(&queue1);
+    // run multiQueueScheduler to run all queues in order of priority 1, 2, 3
+    // multiQueueScheduler(&queue1, &queue2, &queue3);
 
-    // test queue 2 scheduler
     queue2Scheduler(&queue2);
-    // error testing for queue 2
-    queue2Scheduler(&queue2);
-
-    // test queue 3 scheduler
-    queue3Scheduler(&queue3);
-    // error testing for queue 3
-    queue3Scheduler(&queue3);   
 
 
 
