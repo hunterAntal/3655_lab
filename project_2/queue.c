@@ -126,11 +126,30 @@ void queue3Scheduler(struct QueueUserProcess *queue3){
     queue3->count = 0;
 }
 
+// multiQueueScheduler priority 1, 2, 3
+void multiQueueScheduler(struct QueueSysProcess *queue1, struct QueueUserProcess *queue2, struct QueueUserProcess *queue3){
+    // run queue1 scheduler
+    queue1Scheduler(queue1);
+
+    // only run queue2 scheduler if queue1 is empty
+    if (queue1->count == 0){
+        // run queue2 scheduler
+        queue2Scheduler(queue2);
+    }
+
+    // only run queue3 scheduler if queue1 and queue2 are empty
+    if (queue1->count == 0 && queue2->count == 0){
+        // run queue3 scheduler
+        queue3Scheduler(queue3);
+    }
+}
+
+
 int main(void){
     // create a queue to hold waiting user processes before they get sorted into the priority queues
-    struct QueueUserProcess waitingUserQueue[QUEUE_SIZE];
+    struct QueueUserProcess waitingUserQueue;
     // create a queue to hold waiting system processes before they get sorted into the priority queues
-    struct QueueSysProcess waitingSysQueue[QUEUE_SIZE];
+    struct QueueSysProcess waitingSysQueue;
 
     //create priority 1 queue
     struct QueueSysProcess queue1 = {1, 0};
@@ -179,21 +198,21 @@ int main(void){
     addUserToQueue(&waitingUserQueue, onenote);
 
     // add system processes to queue 1
-    for (int i = 0; i < waitingSysQueue->count; i++){
-        addSysToQueue(&queue1, waitingSysQueue->queue[i]);
+    for (int i = 0; i < waitingSysQueue.count; i++){
+        addSysToQueue(&queue1, waitingSysQueue.queue[i]);
     }
 
     // add user processes to queue 2
-    for (int i = 0; i < waitingUserQueue->count; i++){
-        if (waitingUserQueue->queue[i].priority == 2){
-            addUserToQueue(&queue2, waitingUserQueue->queue[i]);
+    for (int i = 0; i < waitingUserQueue.count; i++){
+        if (waitingUserQueue.queue[i].priority == 2){
+            addUserToQueue(&queue2, waitingUserQueue.queue[i]);
         }
     }
 
     // add user processes to queue 3
-    for (int i = 0; i < waitingUserQueue->count; i++){
-        if (waitingUserQueue->queue[i].priority == 3){
-            addUserToQueue(&queue3, waitingUserQueue->queue[i]);
+    for (int i = 0; i < waitingUserQueue.count; i++){
+        if (waitingUserQueue.queue[i].priority == 3){
+            addUserToQueue(&queue3, waitingUserQueue.queue[i]);
         }
     }
 
