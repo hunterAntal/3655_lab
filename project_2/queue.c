@@ -96,6 +96,36 @@ void queue2Scheduler(struct QueueUserProcess *queue2){
     queue2->count = 0;
 }
 
+// queue3 scheduler using shortest job first (SJF)
+void queue3Scheduler(struct QueueUserProcess *queue3){
+    // if queue is empty print message
+    if(queue3->count == 0){
+        printf("Queue %d is empty\n", queue3->queuePriority);
+        return;
+    }
+    // sort shortest job first
+    for (int i = 0; i > queue3->count; i++){
+        // temp variable to hold process
+        struct User_process temp = queue3->queue[0];
+        for (int j = 0; j < queue3->count; j++){
+            // if current process burst time is less than temp burst time
+            if(queue3->queue[j].burstTime < temp.burstTime){
+                temp = queue3->queue[j];
+            }
+        }
+    }
+    // print process that is running and remove it from queue
+    for (int i = 0; i < queue3->count; i++){
+        printf("Process %s is running\n", queue3->queue[0].processName);
+        // remove process from queue
+        for (int j = 0; j < queue3->count; j++){
+            queue3->queue[j] = queue3->queue[j+1];
+        }
+    }
+    // now that all processes have been run, reset the count to 0
+    queue3->count = 0;
+}
+
 int main(void){
     // create a queue to hold waiting user processes before they get sorted into the priority queues
     struct QueueUserProcess waitingUserQueue[QUEUE_SIZE];
@@ -172,6 +202,9 @@ int main(void){
 
     // test queue 2 scheduler
     queue2Scheduler(&queue2);
+
+    // test queue 3 scheduler
+    queue3Scheduler(&queue3);
 
 
 
