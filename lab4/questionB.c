@@ -112,7 +112,7 @@ int main()
             if (frameCount < numberOfFrames)
             {
                 add(head, pageSeq[i]);
-                numberOfFrames++;
+                frameCount++;
             }
             else // if there is no free frames remove LRU frame then use it
             {
