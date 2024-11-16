@@ -1,3 +1,6 @@
+// Created by: Hunter Antal
+// Created on: 16/11/2024
+// Student ID: 1181729
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
