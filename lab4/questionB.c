@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #define MAX 10
 typedef struct node
 {
@@ -78,7 +80,7 @@ int search(node_t *head, int val)
         }
         // move to next node
         current = current->next;
-        
+
         // if there is a hit return 1
         if (current->val == val)
         {
@@ -89,24 +91,68 @@ int search(node_t *head, int val)
     return 0;
 }
 
+
 int main()
 {
 
     int hits = 0;
     int pageFaults = 0;
     int frameCount = 0;
+    int pageReference = 0;
+    float hitRatio = 0.0;
 
-    int numberOfFrames = 3;
+    //int numberOfFrames = 3;
     //int pageSeq[MAX] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3};
-    int pageSeq[] = {7, 0, 1, 1};
+
     node_t *head = NULL;
     head = (node_t *)malloc(sizeof(node_t));
     head->val = -1;
     head->next = NULL;
 
-    for (int i = 0; i < (sizeof(pageSeq)/sizeof(pageSeq[0])); i++)
+    // Take user input for number of frames and page sequence
+    printf("How many frames would you like to use?:");
+    int numberOfFrames = 0;
+    scanf("%d", &numberOfFrames);
+    char input[1000]; // Buffer for user input
+    int *arr = NULL;   // Dynamic array to store numbers
+    int n = 0;         // Number of elements
+
+    printf("Enter numbers separated by spaces: ");
+    fgets(input, sizeof(input), stdin); // Read entire line of input
+
+    // Tokenize the string and convert to integers
+    char *token = strtok(input, " ");
+    while (token != NULL)
+    {
+        arr = realloc(arr, (n + 1) * sizeof(int)); // Resize array
+        if (arr == NULL)
+        {
+            perror("Memory allocation failed");
+            exit(EXIT_FAILURE);
+        }
+        arr[n++] = atoi(token); // Convert string to integer
+        token = strtok(NULL, " ");
+    }
+
+    printf("You entered: ");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    // Convert dynamic array to static array
+    int pageSeq[n];
+    for (int i = 0; i < n; i++)
+    {
+        pageSeq[i] = arr[i];
+    }
+
+    // Loop through the page sequence
+    for (int i = 0; i < (sizeof(pageSeq) / sizeof(pageSeq[0])); i++)
     {
         // if page hit then increment hits
+        pageReference++;
         if (search(head, pageSeq[i]) == 1)
         {
             hits++;
@@ -128,6 +174,8 @@ int main()
         }
     }
 
+    hitRatio = (float)hits / pageReference;
     printf("Number of hits: %d\n", hits);
     printf("Number of page faults: %d\n", pageFaults);
+    printf("Hit ratio: %.2f\n", hitRatio);
 }
