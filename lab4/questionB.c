@@ -62,6 +62,25 @@ int pop(node_t **head)
     return newVal;
 }
 
+// search will return 1 if hit and 0 if page fault
+int search(node_t *head, int val)
+{
+    node_t *current = (node_t *)malloc(sizeof(node_t));
+
+    current = head;
+
+    while (current->next != NULL)
+    {
+        // if there is a hit return 1
+        if (current->val == val)
+        {
+            return 1;
+        }
+    }
+    // page fault return 0
+    return 0;
+}
+
 int main()
 {
 }
