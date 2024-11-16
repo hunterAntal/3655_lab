@@ -78,6 +78,12 @@ int search(node_t *head, int val)
         }
         // move to next node
         current = current->next;
+        
+        // if there is a hit return 1
+        if (current->val == val)
+        {
+            return 1;
+        }
     }
     // page fault return 0
     return 0;
@@ -92,7 +98,7 @@ int main()
 
     int numberOfFrames = 3;
     //int pageSeq[MAX] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3};
-    int pageSeq[] = {7, 0, 1};
+    int pageSeq[] = {7, 0, 1, 1};
     node_t *head = NULL;
     head = (node_t *)malloc(sizeof(node_t));
     head->val = -1;
