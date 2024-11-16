@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#define MAX 10
 typedef struct node
 {
     int val;
@@ -83,4 +83,6 @@ int search(node_t *head, int val)
 
 int main()
 {
+    int numberOfFrames = 3;
+    int pageSeq[MAX] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3};
 }
