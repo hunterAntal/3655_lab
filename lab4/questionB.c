@@ -8,8 +8,8 @@
 // Define the structure for a linked list node
 typedef struct node
 {
-    int val;            // Value stored in the node
-    struct node *next;  // Pointer to the next node
+    int val;           // Value stored in the node
+    struct node *next; // Pointer to the next node
 } node_t;
 
 // Function to print the entire linked list
@@ -24,7 +24,7 @@ void print_list(node_t *head)
     while (current != NULL) // Traverse the list
     {
         printf("%d\n", current->val); // Print the value of each node
-        current = current->next;     // Move to the next node
+        current = current->next;      // Move to the next node
     }
     printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 }
@@ -94,104 +94,136 @@ int pop(node_t **head)
 }
 
 // Function to search for a value in the linked list
-int search(node_t *head, int val)
+int search(node_t **head, int val)
 {
-    node_t *current = head;
+    node_t *current = *head;
+    node_t *prev = NULL;
 
-    while (current != NULL) // Traverse the list
+    // Traverse the list to find the page
+    while (current != NULL)
     {
-        if (current->val == val) // Check for a match
+        if (current->val == val) // Page found
         {
+            // If the page is already at the head, do nothing
+            if (prev == NULL)
+                return 1;
+
+            // Move the page to the front
+            prev->next = current->next; // Remove the node from its current position
+            current->next = *head;      // Insert it at the front
+            *head = current;            // Update head
+
             return 1; // Hit
         }
-        current = current->next; // Move to the next node
+        prev = current;
+        current = current->next;
     }
-
-    return 0; // Page fault if not found
+    return 0; // Page fault
 }
+
+/*Example input
+How many frames would you like to use?: 3
+Enter page sequence separated by spaces (end with newline): 7 0 1 2 0 3 0 4 2 3
+*/
 
 int main()
 {
-    int hits = 0;            // Count of hits
-    int pageFaults = 0;      // Count of page faults
-    int frameCount = 0;      // Current number of frames in use
-    int pageReference = 0;   // Total number of page references
-    float hitRatio = 0.0;    // Hit ratio
-
-    // Prompt user for the number of frames
-    printf("How many frames would you like to use?: ");
-    int numberOfFrames = 0;
-    scanf("%d", &numberOfFrames);
-
-    // Prompt user for the page sequence
-    printf("Enter page sequence separated by spaces (end with newline): ");
-    char input[1000]; // Buffer for user input
-    int *arr = NULL;  // Dynamic array to store the page sequence
-    int n = 0;        // Number of elements in the page sequence
-
-    getchar(); // Clear newline left by scanf
-    if (fgets(input, sizeof(input), stdin) == NULL) // Read input as a line
+    int hits = 0;          // Count of hits
+    int pageFaults = 0;    // Count of page faults
+    int frameCount = 0;    // Current number of frames in use
+    int pageReference = 0; // Total number of page references
+    float hitRatio = 0.0;  // Hit ratio
+    while (1 == 1)
     {
-        perror("Failed to read input");
-        exit(EXIT_FAILURE);
-    }
+        printf("\n");
+        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        printf("Welcome to the LRU page replacement algorithm simulation\n");
+        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        printf("\n");
+        printf("If you would like to exit the program at any time, press Ctrl+C\n");
+        printf("\n");
+        // Prompt user for the number of frames
+        printf("How many frames would you like to use?: ");
+        int numberOfFrames = 0;
+        scanf("%d", &numberOfFrames);
+        while(numberOfFrames <= 0)
+        {
+            printf("Invalid number of frames\n");
+            printf("How many frames would you like to use?: ");
+            scanf("%d", &numberOfFrames);
+        }
+        
+        // Prompt user for the page sequence
+        printf("Enter page sequence separated by spaces (end with newline): ");
+        char input[1000]; // Buffer for user input
+        int *arr = NULL;  // Dynamic array to store the page sequence
+        int n = 0;        // Number of elements in the page sequence
 
-    // Tokenize the input and convert to integers
-    char *token = strtok(input, " ");
-    while (token != NULL)
-    {
-        arr = realloc(arr, (n + 1) * sizeof(int)); // Dynamically resize the array
-        if (arr == NULL) // Check for memory allocation failure
+        getchar();                                      // Clear newline left by scanf
+        if (fgets(input, sizeof(input), stdin) == NULL) // Read input as a line
+        {
+            perror("Failed to read input");
+            exit(EXIT_FAILURE);
+        }
+
+        // Tokenize the input and convert to integers
+        char *token = strtok(input, " ");
+        while (token != NULL)
+        {
+            arr = realloc(arr, (n + 1) * sizeof(int)); // Dynamically resize the array
+            if (arr == NULL)                           // Check for memory allocation failure
+            {
+                perror("Memory allocation failed");
+                exit(EXIT_FAILURE);
+            }
+
+            arr[n++] = atoi(token); // Convert token to integer
+            token = strtok(NULL, " ");
+        }
+
+        // Initialize the linked list
+        node_t *head = (node_t *)malloc(sizeof(node_t));
+        if (head == NULL) // Check for memory allocation failure
         {
             perror("Memory allocation failed");
             exit(EXIT_FAILURE);
         }
 
-        arr[n++] = atoi(token); // Convert token to integer
-        token = strtok(NULL, " ");
-    }
+        head->val = -1; // Dummy value for the head
+        head->next = NULL;
 
-    // Initialize the linked list
-    node_t *head = (node_t *)malloc(sizeof(node_t));
-    if (head == NULL) // Check for memory allocation failure
-    {
-        perror("Memory allocation failed");
-        exit(EXIT_FAILURE);
-    }
-
-    head->val = -1;  // Dummy value for the head
-    head->next = NULL;
-
-    // Simulate the page replacement algorithm
-    for (int i = 0; i < n; i++)
-    {
-        pageReference++; // Increment page reference count
-        if (search(head, arr[i])) // Check if the page is already in memory
+        // Simulate the page replacement algorithm
+        for (int i = 0; i < n; i++)
         {
-            hits++; // Increment hits if found
-        }
-        else
-        {
-            pageFaults++; // Increment page faults if not found
-            if (frameCount < numberOfFrames) // If frames are available
+            pageReference++;           // Increment page reference count
+            if (search(&head, arr[i])) // Check if the page is already in memory
             {
-                add(head, arr[i]); // Add the page to memory
-                frameCount++;      // Increment the frame count
+                hits++; // Increment hits if found
             }
-            else // If no frames are available, remove LRU and add new page
+            else
             {
-                pop(&head);
-                add(head, arr[i]);
+                pageFaults++;                    // Increment page faults if not found
+                if (frameCount < numberOfFrames) // If frames are available
+                {
+                    add(head, arr[i]); // Add the page to memory
+                    frameCount++;      // Increment the frame count
+                }
+                else // If no frames are available, remove LRU and add new page
+                {
+                    pop(&head);
+                    add(head, arr[i]);
+                }
             }
         }
+
+        // Calculate and display the hit ratio
+        hitRatio = (float)hits / pageReference;
+        printf("Number of hits: %d\n", hits);
+        printf("Number of page faults: %d\n", pageFaults);
+        printf("Hit ratio: %.2f\n", hitRatio);
+
+        free(arr);  // Free the dynamic array
+        free(head); // Free the linked list
     }
-
-    // Calculate and display the hit ratio
-    hitRatio = (float)hits / pageReference;
-    printf("Number of hits: %d\n", hits);
-    printf("Number of page faults: %d\n", pageFaults);
-    printf("Hit ratio: %.2f\n", hitRatio);
-
-    free(arr); // Free the dynamic array
     return 0;
 }
